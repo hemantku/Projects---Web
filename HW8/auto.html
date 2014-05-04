@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+<script type="text/javascript" src="http://yui.yahooapis.com/2.9.0/build/yahoo/yahoo-min.js"></script> 
+  <script src="http://yui.yahooapis.com/3.15.0/build/yui/yui-min.js"></script>
+</head>
+<body >
+<h>Stock Quotes AutoSuggest </h>
+</br></br>
+<div class="container yui3-skin-sam">
+<label for="ac-input">Enter an asset (for instance, YAHOO):</label><br>
+<input id="ac-input" type="text">
+</div>
+<script type="text/javascript">
+    /*global YUI, YAHOO:true, alert */
+
+"use strict";
+
+var YAHOO = {};
+YAHOO.util = {};
+YAHOO.util.ScriptNodeDataSource = {};
+
+YUI({
+    filter: "raw"
+}).use("datasource", "autocomplete", "highlight", function (Y) {
+    var oDS, acNode = Y.one("#ac-input");
+
+    oDS = new Y.DataSource.Get({
+        source: "http://d.yimg.com/aq/autoc?query=",
+        generateRequestCallback: function (id) {
+            YAHOO.util.ScriptNodeDataSource.callbacks =
+                YUI.Env.DataSource.callbacks[id];
+            return "&callback=YAHOO.util.ScriptNodeDataSource.callbacks";
+        }
+    });
+    oDS.plug(Y.Plugin.DataSourceJSONSchema, {
+        schema: {
+            resultListLocator: "ResultSet.Result",
+            resultFields: ["symbol", "name", "exch", "type", "exchDisp"]
+        }
+    });
+
+    acNode.plug(Y.Plugin.AutoComplete, {
+        maxResults: 10,
+        resultTextLocator: "symbol",
+        resultFormatter: function (query, results) {
+            return Y.Array.map(results, function (result) {
+                var asset = result.raw,
+                    text =  asset.symbol +
+                        " " + asset.name +
+                        " (" + asset.type +
+                        " - " + asset.exchDisp + ")";
+
+                return Y.Highlight.all(text, query);
+            });
+        },
+        requestTemplate:  "{query}&region=US&lang=en-US",
+        source: oDS
+    });
+
+    acNode.ac.on("select", function (e) {
+        alert(e.result.raw.name);
+    });
+});
+   
+</script>
+</body>
+</html>

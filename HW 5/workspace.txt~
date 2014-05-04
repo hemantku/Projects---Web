@@ -1,0 +1,31 @@
+http://query.yahooapis.com/v1/public/yql?q=select%20AskRealtime,%20ChangeinPercent%20from%20yahoo.finance.quotes%20where%20symbol%20in%20%28%22A%22,%22AA%22,%22AAN%22,%22AAP%22,%22AAR%22,%22AAT%22,%22AAV%22,%22AB%22,%22ABB%22,%22ABC%22,%22ABD%22,%22ABG%22,%22ABH%22,%22ABM%22,%22ABR%22,%22ABT%22,%22ABV%22%29&env=store://datatables.org/alltableswithkeys
+
+s
+
+
+http://query.yahooapis.com/v1/public/yql?
+q=select%20Name%2C%20Symbol%2C%20LastTradePriceOnly%2C%20Change%2C%20ChangeinPercent%2C%20PreviousClose%2C%20DaysLow%2C%20DaysHigh%2C
+%20OpenYearLow%2C%20YearHigh%2C%20Bid%2C%20Ask%2C%20AverageDailyVolume%2C%20OneyrTargetPrice%2C%20MarketCapitalization%20from
+%20yahoo.finance.quotes%20where%20symbol%3D%22USB^H%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+
+http://query.yahooapis.com/v1/public/yql?
+q=select%20Name%2C%20Symbol%2C%20LastTradePriceOnly%2C%20Change%2C%20ChangeinPercent%2C%20PreviousClose%2C%20DaysLow%2C%20DaysHigh%2C
+%20OpenYearLow%2C%20YearHigh%2C%20Bid%2C%20Ask%2C%20AverageDailyVolume%2C%20OneyrTargetPrice%2C%20MarketCapitalization%20from
+%20yahoo.finance.quotes%20where%20symbol%3D%22LLLL%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
+
+<query yahoo:count="1" yahoo:created="2014-03-01T21:31:16Z" yahoo:lang="en-US"><results><quote><Bid>1213.50</Bid><Change>-3.5599</Change><DaysLow>1206.22</DaysLow><DaysHigh>1224.1899</DaysHigh><YearHigh>1228.88</YearHigh><MarketCapitalization>408.5B</MarketCapitalization><LastTradePriceOnly>1215.65</LastTradePriceOnly><Name>Google Inc.</Name><PreviousClose>1219.21</PreviousClose><ChangeinPercent>-0.29%</ChangeinPercent><Symbol>GOOG</Symbol><OneyrTargetPrice>1318.13</OneyrTargetPrice><Ask>1214.9399</Ask><AverageDailyVolume>2113130</AverageDailyVolume></quote></results></query>
+
+str_replace('-', '', ($row->rebateprice))
+
+//foreach ($company_detail as $key_name => $key_value) {
+
+							//print "Key = " . $key_name . " Value = " . $key_value . "<BR>";
+
+							//}
+
+					
+//echo'Prev. Close:<span style="display:inline-block;height:1em;width:26em;">&nbsp;</span>'.$company_detail["PrevClose"]."   ".'Day &#39;s Range:<span style="display:inline-block;height:1em;width:26em;">&nbsp;</span>'.$company_detail["DaysLow"].'-'.$company_detail["DaysHigh"]
+//echo '<br/>';
+//echo'Open:<span style="display:inline-block;height:1em;width:30em;">&nbsp;</span>'.$company_detail["Open"]."   ".'52wk Range:<span style="display:inline-block;height:1em;width:26em;">&nbsp;</span>'.$company_detail["YearLow"].'-'.$company_detail["YearHigh"];	
+
+http://feeds.finance.yahoo.com/rss/2.0/headline?s=NGJ14.NYM&region=US&lang=en-US

@@ -1,0 +1,300 @@
+<html>
+<head>
+   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+   <title>CSCI 571 Homework #8</title>
+   <link rel="stylesheet" href="customstock.css">
+  <script src="http://yui.yahooapis.com/3.13.0/build/yui/yui-min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+   
+   <script language="javascript">
+   var jsonObject;
+
+   var YAHOO = {};
+ YAHOO.util = {};
+  YAHOO.util.ScriptNodeDataSource = {};
+
+YUI({
+    filter: "raw"
+}).use("datasource", "autocomplete", "highlight", function (Y) {
+    var oDS, acNode = Y.one("#ac-input");
+
+    oDS = new Y.DataSource.Get({
+        source: "http://d.yimg.com/aq/autoc?query=",
+        generateRequestCallback: function (id) {
+            YAHOO.util.ScriptNodeDataSource.callbacks =
+                YUI.Env.DataSource.callbacks[id];
+            return "&callback=YAHOO.util.ScriptNodeDataSource.callbacks";
+        }
+    });
+    oDS.plug(Y.Plugin.DataSourceJSONSchema, {
+        schema: {
+            resultListLocator: "ResultSet.Result",
+            resultFields: ["symbol", "name", "exch", "type", "exchDisp"]
+        }
+    });
+
+    acNode.plug(Y.Plugin.AutoComplete, {
+        maxResults: 10,
+        resultTextLocator: "symbol",
+        resultFormatter: function (query, results) {
+            return Y.Array.map(results, function (result) {
+                var asset = result.raw,
+                    text =  asset.symbol +
+                        "," + asset.name +
+                        " (" + asset.exchDisp + ")";
+
+                return Y.Highlight.all(text, query);
+            });
+        },
+        requestTemplate:  "{query}&region=US&lang=en-US",
+        source: oDS
+    });
+
+    acNode.ac.on("select", function (e) {
+        //alert(e.result.raw.name);
+        //alert(e.result.raw.symbol);
+	//document.forms["stock-form"]["symbol"].value = e.result.raw.name;
+	//alert(document.forms["stock-form"]["symbol"].value);
+	 //document.getElementById("symbol").value = e.result.raw.name;
+	$('#ac-input').val(e.result.raw.symbol);
+	$('#stock-form').submit();
+	
+    });
+});
+   
+   $(document).ready(function() {
+	$('#stock-form').submit(function(event) { 
+		event.preventDefault(); // prevent page refresh
+         $('#demo').empty();
+	 $('#results').empty();
+         $('#Name').empty();
+	  $('#Line').empty();
+	$('#LastTradePriceOnly').empty();
+	$('#facebook-button').empty();
+        $('#StockChartImageURL').empty();
+
+         // Check to make sure location was actually entered
+    if((document.forms["stock-form"]["symbol"].value=="") || (document.forms["stock-form"]["symbol"].value==null))			    { 									// check to make sure a company symbol was entered
+            window.alert("Please enter a symbol.");
+            return false;
+        } 
+	
+  var symbol = document.forms["stock-form"]["symbol"].value;
+    //alert(symbol);
+	var url= "http://cs-server.usc.edu:17001/examples/servlet/StockSearch?symbol=";
+  url = url + symbol;
+	//alert(url);
+  var output;
+  var tabview;
+ 
+  $.ajax({
+	   type:'GET',
+	   url: url,
+	   success: function(response)
+    {
+		       	try{
+				    jsonObject = JSON.parse(response);
+				    //alert(jsonObject.count);
+		   		     }
+			     catch(e)
+		   		   {
+	       	 		   console.error("Parsing of JSON Failed! Error:", e);
+               		  	   alert("Invalid JSON string.");
+				      }
+			
+			       if(jsonObject.result.Quote.Change)
+			      {
+				        YUI().use('node', function(Y)
+                {
+                		if (jsonObject.result.Name || jsonObject.result.Symbol) 
+				            {
+                  			Y.one('#Name').set("innerHTML", "<p style='padding-left:20px'><font face='Times New Roman' color='white' size='+3'><strong>" + jsonObject.result.Name + "</strong></font><font face='Verdana' color='white' size='+3'><strong>("+ jsonObject.result.Symbol + ")</strong></font></p>");
+               			 }
+				        });
+         YUI().use('node', function(Y)
+         {
+                  var color,img;
+                   
+                    if (jsonObject.result.Quote.LastTradePriceOnly || jsonObject.result.Quote.Change) 
+                    {
+
+                       if(jsonObject.result.Quote.ChangeType == '+')
+                      {
+                           $color = '#00FF00';
+                           $img = 'up_g.gif';
+
+                      }
+                      else if (jsonObject.result.Quote.ChangeType == '-')
+                      {
+                          $color = '#FF0000';
+                          $img = 'down_r.gif';
+
+                      }
+                      else
+                      {
+                          $img = '';
+                          $color = '#FFFFFF';
+
+                      }
+                        Y.one('#LastTradePriceOnly').set("innerHTML", "<p style='padding-left:20px'><font face='Times New Roman' color='white' size='+4'>" + jsonObject.result.Quote.LastTradePriceOnly + "</font>" + '  ' +"<img src='" + $img + "' height = '30'>"+'  '+"<font face='Verdana' color=" + $color + " size='+3'>" + jsonObject.result.Quote.Change +"(" + jsonObject.result.Quote.ChangeinPercent+")</font></p>");
+                     }
+         });
+        YUI().use('node', function(Y)
+         {
+                    if (jsonObject.result.StockChartImageURL) 
+                    {
+                      Y.one('#StockChartImageURL').set("innerHTML", "<p><img src=\"" + jsonObject.result.StockChartImageURL + "\"></p>");
+                    }
+         });
+         YUI().use('node', function(Y)
+         {
+
+          //Y.one('#facebook-button').set("innerHTML", "<button class='pure-button' style='left-padding:20px' width='70' height='30' id='login-button' onclick='login()'><img src='facebook-logosmall.jpg'alt='facebook' height='30' width='70'></button>");
+          Y.one('#facebook-button').set("innerHTML", "<input type='image' src='facebook.jpg'alt='facebook' height='30' width='70' onclick='login()'>");
+
+          });
+         YUI().use('node', function(Y)
+         {
+                   
+            Y.one('#Line').set("innerHTML", "<hr style='height:0.5px;border:1px solid;color:#FFFFFF;background-color:#FFFFFF;width:136%'>");
+                    
+         });
+
+         //alert(jsonObject.result.News.Item.length)
+
+         if(jsonObject.result.News.Item.length)
+        {
+         output = '<ul>';
+         for (var i = 0; i < jsonObject.result.News.Item.length; i++)
+         {
+
+              output+='<li><a href="' + jsonObject.result.News.Item[i].Link + '"</a>' + jsonObject.result.News.Item[i].Title + '</li>';
+
+         }
+        output+='</ul>';
+        //alert(output);
+      }
+      else
+      {
+          output = '<p>News is not available</p>';
+
+           
+      }
+
+         YUI().use('tabview', function(Y) {
+             tabview = new Y.TabView({
+          children: [{
+            label: 'Quote Information',
+            content: '<table style="width:1230px; height=20px;"><tr><td>Prev. Close:</td><td align="right">'+ jsonObject.result.Quote.PreviousClose + '</td><td align="center">Day&#39;s Range:</td><td align="right">' + jsonObject.result.Quote.DaysLow + ' - ' + jsonObject.result.Quote.DaysHighs + '</td></tr><tr><td>Open:</td><td align="right">' + jsonObject.result.Quote.Open +'</td><td align="center">52wk Range:</td><td align="right">' + jsonObject.result.Quote.YearLow + ' - ' + jsonObject.result.Quote.YearHigh + '</td></tr><tr><td>Bid:</td><td align="right">' + jsonObject.result.Quote.Bid + '</td><td align="center">Volume:</td><td align="right">' + jsonObject.result.Quote.Volume + '</td></tr><tr><td>Ask:</td><td align="right">' + jsonObject.result.Quote.Ask + '</td><td align="center">Avg.Vol(3m):</td><td align="right">' + jsonObject.result.Quote.AverageDailyVolume +'</td></tr><tr><td>1y Target Est.:</td><td align="right">' + jsonObject.result.Quote.OneyrTargetPrice + '</td><td align="center">Market Cap:</td><td align="right">' + jsonObject.result.Quote.MarketCapitalization + '</td></tr></table>'
+          }, {
+            label: 'News Headlines',
+            content: output
+        }]
+    });
+              
+              tabview.render('#demo');
+      });
+      
+        
+			}
+			else 
+			{ // No results found
+              			YUI().use('node', function(Y)
+                    {
+               			 Y.one('#results').set("innerHTML", "<h1>Stock information cannot be found!</h1>");
+             			  });
+      }
+	 }
+		
+		});
+      return false;
+        });
+   });
+    
+     function login() {
+      FB.login(function(response) {
+          if (response.authResponse) {
+              // User authorized app
+          } else {
+              // User cancelled login or did not fully authorize
+          }
+      }, {scope: 'publish_stream'});
+      //alert("I am here");
+      setStatusThroughFBUI();
+    }
+    function setStatusThroughFBUI() {
+          var text = "Last Trade Price is:" + jsonObject.result.Quote.LastTradePriceOnly + ",Change is:" + jsonObject.result.Quote.ChangeType + jsonObject.result.Quote.Change + "(" + jsonObject.result.Quote.ChangeinPercent + ")";
+          //alert(text);
+         //var company = "<a href=\"http://finance.yahoo.com/q?s=" + jsonObject.result.Symbol + "\"><bold>" + jsonObject.result.Name + "</bold></a>";
+          //alert(company);
+          var stock = "Stock Information of:" + jsonObject.result.Name + "(" + jsonObject.result.Symbol + ")";
+           var obj = {
+          method: 'feed',       
+          link: 'http://finance.yahoo.com/q?s=' + jsonObject.result.Symbol,
+          picture: jsonObject.result.StockChartImageURL,
+          name:jsonObject.result.Name,
+          caption: stock,
+          description: text
+        };
+        function callback(response) {
+          if(response['post_id'])
+          {
+               alert("Post was Published!");
+          }
+      }
+
+      FB.ui(obj, callback);
+    }
+  </script>
+</head> 
+<body>
+  <div id="fb-root"></div>
+  <script>
+   window.fbAsyncInit = function() {
+      // init the FB JS SDK
+      FB.init({
+        appId      : '439353949544011',                        // App ID from the app dashboard
+        channelUrl : 'http://cs-server.usc.edu:17001/examples/servlets/channel.html', // Channel file for x-domain comms
+        status     : true,                                 // Check Facebook Login status
+        xfbml      : true                                  // Look for social plugins on the page
+      });
+  
+      // Additional initialization code such as adding Event Listeners goes here
+    };
+  
+    // Load the SDK asynchronously
+    (function(){
+       // If we've already installed the SDK, we're done
+       if (document.getElementById('facebook-jssdk')) {return;}
+  
+       // Get the first script element, which we'll use to find the parent node
+       var firstScriptElement = document.getElementsByTagName('script')[0];
+  
+       // Create a new script element and set its id
+       var facebookJS = document.createElement('script'); 
+       facebookJS.id = 'facebook-jssdk';
+  
+       // Set the new script's source to the source of the Facebook JS SDK
+       facebookJS.src = '//connect.facebook.net/en_US/all.js';
+  
+       // Insert the Facebook JS SDK into the DOM
+       firstScriptElement.parentNode.insertBefore(facebookJS, firstScriptElement);
+     }());
+  </script>
+  <div class="stock_searchForm">
+  <form class="stock-form" name="stock-form" id="stock-form">
+    <div class="container yui3-skin-sam">
+    <span class="label">Company:</span><input id="ac-input" class="input-large" type="text" name="symbol" placeholder="Enter Company symbol...">
+    <input id="button" class="input-rounded-button" style="height:35px;width:80px;" type="submit" name="submit" value="Search"><br>
+    </div>
+  </form><br><br>
+   </div>
+  <div id="results" style="padding-left:100px;"></div>
+  <table style="width:1600px; height=10px;">
+  <tr><td style="vertical-align:top;"><div id="Name" style="line-height:1"></div><div id="LastTradePriceOnly" style="line-height:1"></div><div id="facebook-button" style="line-height:1;padding-left:20px"></div></td><td><div id="StockChartImageURL"></div></td></tr>
+  </table>
+  <div id="Line" style="padding-left:20px;padding-right:20px"></div>
+   <div id="demo" class="yui3-skin-sam yui-skin-sam" style="padding-left:20px;padding-right:20px;margin:0;"></div>
+  </body>
+ </html>

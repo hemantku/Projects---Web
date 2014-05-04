@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC “@-//W3C//DTD XHTML 1.0 Strict//EN”
+“http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict-dtd”>
+<html>
+<head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+                <title>Homework #4</title>
+                <script>
+                
+                        
+                        var customerTableHTML = "";
+                        var orderTableHTML = "";
+                        var custWin;
+                        var xmlDoc;
+                
+                        function queryXML() {
+                                var xmlfile = document.getElementById('xmlFile').value;
+                                //alert(xmlfile);
+                                // check if file exists - TODO
+                                if (document.implementation && document.implementation.createDocument) {
+                                        xmlDoc = document.implementation.createDocument("", "doc", null);
+                                        xmlDoc.async = false;
+                                        loaded = xmlDoc.load(xmlfile);
+                                        if (!loaded) {
+                                                alert("parse fail!");
+                                        } else {
+                                                
+                                                makeCustomerTable(xmlDoc);
+                                                if (customerTableHTML != "") {
+                                                        custWin = window.open("", "customersTable", "height=600,width=800, scrollbars=1" );
+                                                        custWin.document.write(customerTableHTML);
+                                                        custWin.document.getElementById('customerButton').onclick = getCustomerOrders;
+                                                }
+                                                //}
+                                                //custWin.document.close();
+                                        }
+                                }
+                        }
+                        
+                // get which customer to get the orders for
+                        function getCustomerOrders() {
+                                var customers = custWin.document.getElementsByName('customersRadio');
+                                //alert(customers.length);
+                                for (k = 0; k < customers.length; ++k) {
+                                        //alert(customers[k].id);
+                                        if (customers[k].checked) {
+                                        //        custWin.alert(customers[k].id);
+                                                makeOrderTable(customers[k].id);
+                                                break;
+                                        }
+                                }        
+                        }
+                        
+                                                // make table for this customer's orders
+                        function makeOrderTable(custID) {
+                                // get div to put stuff in
+                        //        custWin.alert(custID);
+                                var orderRoot = custWin.document.getElementById("orders");
+                                //custWin.alert(orderRoot);
+                                // check if there's already something there, remove it
+                                if (orderRoot.hasChildNodes()) {
+                                        orderRoot.removeChild(orderRoot.firstChild);
+                                }
+                                // get orders
+                                var orderArray = xmlDoc.documentElement.getElementsByTagName('Order');
+                                //custWin.alert(orderArray);
+                                // new table for cutomer orders
+                                orderT = custWin.document.createElement('table');
+                                orderT.setAttribute('border', '1');
+                                // first row
+                                otr = custWin.document.createElement('tr');
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Order for Customer ' + custID));
+                                otc.setAttribute('align', 'left');
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('td');
+                                otc.setAttribute('colspan', '10');
+                                otr.appendChild(otc);
+                                orderT.appendChild(otr);
+                                // 2nd row
+                                otr = custWin.document.createElement('tr');
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Order Date'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Required Date'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Ship Info'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Ship Via'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Freight'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Ship Name'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Ship Address'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Ship City'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Ship Region'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Ship Postal Code'));
+                                otr.appendChild(otc);
+                                otc = custWin.document.createElement('th');
+                                otc.appendChild(custWin.document.createTextNode('Ship Country'));
+                                otr.appendChild(otc);
+                                orderT.appendChild(otr);
+                                
+                                for (l = 0; l < orderArray.length; ++l) {
+                                        //var orderNodes = orderArray[l].childNodes; // get Children or this order
+                                        cID = orderArray[l].getElementsByTagName('CustomerID');
+                                //        custWin.alert(cID.length);
+                                //        custWin.alert(cID[0].firstChild.nodeValue);
+                                        // There is an order for this customer! add it to teh table
+                                        if (cID[0].firstChild.nodeValue == custID) {
+                                //                custWin.alert('this matches!' + l);
+                                                otr = custWin.document.createElement('tr');
+                                                cell = orderArray[l].getElementsByTagName('OrderDate');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('RequiredDate');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('ShipInfo');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].getAttribute("ShippedDate")));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('ShipVia');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('Freight');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('ShipName');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('ShipAddress');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('ShipCity');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('ShipRegion');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('ShipPostalCode');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                cell = orderArray[l].getElementsByTagName('ShipCountry');
+                                                otc = custWin.document.createElement('td');
+                                                otc.setAttribute('align', 'center');
+                                                otc.appendChild(custWin.document.createTextNode(cell[0].firstChild.nodeValue));
+                                                otr.appendChild(otc);
+                                                orderT.appendChild(otr);
+                                        }
+                                }
+                                orderRoot.appendChild(orderT);
+                                if (orderT.childNodes.length == 2) {
+                                        custWin.alert("No orders for this customer");
+                                }
+                                //custWin.alert(orderT.childNodes.length); // if this is 2 than there are no orders for this customer
+
+                        }
+                        
+                        
+                        // generates first table
+                        function makeCustomerTable(xmlDoc) {
+                                //root = xmlDoc.documentElement;
+                                var customerArray =xmlDoc.documentElement.getElementsByTagName('Customer');
+                                // check if there's no customers
+                                if (customerArray.length == 0) {
+                                        alert("No Customers!");
+                                        customerTableHTML = "";
+                                        //alert(customerTableHTML);
+                                        return;
+                                }
+                                // check for order with non-existant customer
+                                // get customers with orders
+                                ordersByCust = xmlDoc.documentElement.getElementsByTagName('CustomerID');
+                                for (m = 0; m < ordersByCust.length; ++m) {
+                                                c = ordersByCust[m].firstChild.nodeValue;
+                                                exists = false;
+                                                for (n = 0; n < customerArray.length; ++n) {
+                                                        if (c == customerArray[n].getAttribute("CustomerID")) {
+                                                                exists = true;
+                                                                break;
+                                                        }
+                                                }
+                                                if (exists == false) {
+                                                        alert("this order has no customer!");
+                                                        customerTableHTML = "";
+                                                        //alert(customerTableHTML);
+                                                        //alert(customerTableHTML);
+                                                        return;
+                                                }
+                                }
+                                
+                                
+                                
+                                customerTableHTML = "<html><head><title>Customer Table</title></head><body>";
+                                
+                                //start table
+                                customerTableHTML += "<form><table border='1'>"
+                                customerTableHTML +=         "<tr>" +
+                                                                                        "<th>List of Customer Information</th>" +
+                                                                                        "<td colspan=4></td>" +
+                                                                                "</tr>";
+                                customerTableHTML +=        "<tr>" +
+                                                                                        "<th>Select One Click Submit</th>" +
+                                                                                        "<th>Cutomer ID</th>" +
+                                                                                        "<th>Company Name</th>" +
+                                                                                        "<th>Contact Name</th>" +
+                                                                                        "<th>Contact Title</th>" +
+                                                                                        "<th>Phone</th>" +
+                                                                                "</tr>";
+                                // get how many customers
+                                // row for each customer
+                                for (i = 0; i < customerArray.length; ++i) {
+                                //alert(customerArray[i].getAttribute("CustomerID"));
+                                        cID = customerArray[i].getAttribute("CustomerID");
+                                        customerTableHTML += "<tr>" +
+                                                                                        "<td align='center'><input type='radio' name='customersRadio' id='" +
+                                                                                                cID + "'/></td>";
+                                        customerTableHTML += "<td>" + cID + "</td>";
+                                //        var customerNodes = customerArray[i].childNodes; // get children of this node
+                                        // loop through these nodes
+                                //        for (j = 0; j < customerNodes.length; ++j) {
+                                        //        if (customerNodes[j].nodeType == Node.ELEMENT_NODE) {
+                                                //        if (customerNodes[j].nodeName == "CompanyName") {
+                                        cell = customerArray[i].getElementsByTagName('CompanyName');
+                                        customerTableHTML += "<td>" + cell[0].firstChild.nodeValue + "</td>";
+                                                        //} else if (customerNodes[j].nodeName == "ContactName") {
+                                        cell = customerArray[i].getElementsByTagName('ContactName');
+                                        customerTableHTML += "<td>" + cell[0].firstChild.nodeValue + "</td>";
+                                                //        } else if (customerNodes[j].nodeName == "ContactTitle") {
+                                        cell = customerArray[i].getElementsByTagName('ContactTitle');
+                                        customerTableHTML += "<td align='center'>" + cell[0].firstChild.nodeValue + "</td>";
+                                                        //} else if (customerNodes[j].nodeName == "Phone") {
+                                        cell = customerArray[i].getElementsByTagName('Phone');
+                                        customerTableHTML += "<td align='center'>" + cell[0].firstChild.nodeValue + "</td>";
+                                                        //}
+                                                //}
+                                        //}
+                                        customerTableHTML += "</tr>"
+                                }
+                                //
+                                // end
+                                customerTableHTML += "</table>";
+                                
+                                // submit button
+                                customerTableHTML += "<input type='button' value='Submit' id='customerButton' />"
+                                
+                                customerTableHTML += "</form><div id='orders'></div>";
+                                
+                                customerTableHTML += "<NOSCRIPT>";
+                                customerTableHTML += "</bo" + "dy>";
+                                customerTableHTML += "</html>";
+                        }
+                                        
+
+                </script>
+</head>
+<body>
+        <form>
+                <label for='xmlFile'>Enter Customer/Order XML File</label>
+                <br/>
+                <input type='text' style='margin: 0px auto' size=50 id='xmlFile'/>
+                <br/>
+                <input type='button'value='SubmitQuery' onClick='queryXML()' id='queryButton'/>
+
+        </form>
+        <NOSCRIPT>
+</body>
+</html>

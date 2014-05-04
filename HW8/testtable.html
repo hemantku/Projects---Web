@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-Language" content="en-us" />
+	<script type="text/javascript" src="http://yui.yahooapis.com/3.1.1/build/yui/yui-min.js"></script>
+</head>
+<body>
+	<div id="tabview_container" class="yui3-skin-sam yui-skin-sam">
+	<div id="tabview"></div>
+	</div>
+	
+	<script>
+
+		YUI().use('tabview', 'yui2-datasource', 'yui2-connection', 'yui2-dragdrop', 'yui2-datatable', function(Y) {
+		
+		var tabview;  // tabview that will be populated and rendered in the load_tabview function
+		
+		Y.load_tabview = function () {
+		
+			tabview = new Y.TabView({
+				children: [{
+					label: 'Tab 1',
+					content: '<div id="tab1_tablediv"></div>'
+				}, {
+					label: 'Tab 2',
+					content: '<div id="tab2_tablediv"></div>'
+				}],
+				width:"30em", height:"10em"
+			});
+			
+			// now that we have built the tabview go ahead and render it
+			tabview.render('#tabview');
+			
+			// and then load the contents of the first tab
+			Y.load_tab1_tablediv();
+			
+			// finally set a listener for a tab selection change
+			tabview.on("selectionChange", function(e) {
+			
+				var tabSelected = e.newVal.get("index");
+				
+				switch (tabSelected) {
+				case 0:
+					//Y.tab1_datatable.refreshView();
+					break;
+				case 1:
+					//Y.tab2_datatable.refreshView();
+					Y.tab2_datatable.render();
+					//Y.tab2_datatable.onShow();
+					//Y.tab2_datatable.validateColumnWidths();
+					break;
+				}
+			});
+		}
+		
+		var YAHOO = Y.YUI2;
+		
+		// tab 1
+		Y.load_tab1_tablediv = function () {
+		
+			Y.on("available", function() {
+			
+				//This is the data from which the DataTable will be built:
+				var tab1_data = [
+					{user_id:"0001", name:"Bill", role:"Boss"},
+					{user_id:"0002", name:"Sue", role:"Tech"},
+					{user_id:"0003", name:"Steve", role:"Tech"},
+					{user_id:"0004", name:"Erin", role:"Owner"}
+				];
+				
+				var tab1_datatable_column_defs = [
+					{key:"user_id", label:"User ID", sortable:true, resizeable:true, 
+						sortOptions:{defaultDir:YAHOO.widget.DataTable.CLASS_DESC}},
+					{key:"name", label:"Name", sortable:true, resizeable:true},
+					{key:"role", label:"Role", sortable:true, resizeable:true}
+				];
+				
+				var tab1_datatable_data_source = new YAHOO.util.DataSource(tab1_data);
+					tab1_datatable_data_source.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+					tab1_datatable_data_source.responseSchema = {
+					fields: ["user_id","name","role"]
+				};
+				
+				Y.tab1_datatable = new YAHOO.widget.ScrollingDataTable("tab1_tablediv",
+					tab1_datatable_column_defs, tab1_datatable_data_source, {
+					draggableColumns:true,
+					width:"25em", height:"8em"
+				});
+			
+				// load the table in the second tab once the first tab table has finished initialization
+				Y.tab1_datatable.on("initEvent", function(){
+					Y.load_tab2_tablediv();
+				}); 
+				
+				return {
+					oDS: tab1_datatable_data_source,
+					oDT: Y.tab1_datatable
+				};
+			
+			}, "#tab1_tablediv");  
+		
+		};
+		
+		// tab 2
+		Y.load_tab2_tablediv = function () {
+		
+			Y.on("available", function() {
+			
+				//This is the data from which the DataTable will be built:
+				var tab2_data = [
+					{project_id:"0001", site_name:"Mankato State Univ",       kWh:"56", kW:"7"},
+					{project_id:"0002", site_name:"Stillwater Prison",        kWh:"24", kW:"2"},
+					{project_id:"0003", site_name:"House of Rep Office Bldg", kWh:"53", kW:"1"},
+					{project_id:"0004", site_name:"UMD Main Campus",          kWh:"44", kW:"4"}
+				];
+				
+				var tab2_datatable_column_defs = [
+					{key:"project_id", label:"Project ID", sortable:true, resizeable:true, 
+						sortOptions:{defaultDir:YAHOO.widget.DataTable.CLASS_DESC}},
+					{key:"site_name", label:"Site Name", sortable:true, resizeable:true},
+					{key:"kWh", label:"kWh", sortable:true, resizeable:true},
+					{key:"kW", label:"kW", sortable:true, resizeable:true}
+				];
+				
+				var tab2_datatable_data_source = new YAHOO.util.DataSource(tab2_data);
+					tab2_datatable_data_source.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+					tab2_datatable_data_source.responseSchema = {
+					fields: ["project_id","site_name","kWh","kW"]
+				};
+				
+				Y.tab2_datatable = new YAHOO.widget.ScrollingDataTable("tab2_tablediv",
+					tab2_datatable_column_defs, tab2_datatable_data_source, {
+					draggableColumns:true,
+					width:"25em", height:"5em"
+				});
+				
+				return {
+					oDS: tab2_datatable_data_source,
+					oDT: Y.tab2_datatable
+				};
+			
+			}, "#tab2_tablediv");  
+		
+		};
+		
+		
+		Y.load_tabview();
+		
+		});
+	
+	</script>
+	
+</body>
+</html>

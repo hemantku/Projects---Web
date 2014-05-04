@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>HW#3- CSCI 571</title>
+<style>
+#toplinks{
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	font-size:79%;
+	
+} 
+#toplinks li{
+	display: inline; 
+	padding-right:17px;
+	padding-top: 10px;
+	font-family:Arial,Helvetica,sans-serif;
+	
+	
+}
+#main{
+	font-family:Helvetica, sans-serif; 
+	font-size:250%;
+	padding-left:50px;
+	padding-right:80px;
+	padding-top: 10px;
+	
+}
+.bottomlinks{
+	list-style-type:none;
+	float:left;
+	font-size:80%;
+	line-height:200%;
+	padding-top:1.5cm;
+	color:#C0C0C0;
+	font-family:Arial,Helvetica,sans-serif;
+}
+#content{
+	font-family:Helvetica, sans-serif;
+	font-style:italic;
+	padding-top:1.2cm; 
+	padding-right:1.0cm;
+	padding-left:6.0cm;
+	padding-bottom:0.1cm;
+	line-height:150%;
+	color:#009933;
+	
+	
+}
+#title{
+	color:black;
+	font-family:"Courier New", Courier, monospace;
+	font-style:normal;
+	font-size:90%;
+	line-height:300%;
+	letter-spacing:1px;
+	
+}
+hr.line{
+	
+	height: 1px;
+	border: 0;
+	color: #888888;
+	background-color: #888888;
+	width:90%;
+	
+}
+#line-et{
+
+	padding-left:5.0cm;
+
+}
+</style>
+</head>
+<body>
+<ul id ="toplinks">
+		<b id ="main">Perkins & Richards</b>
+		<li><a href="X.html#ABOUTUS"style="color:#888888;text-decoration: none;">ABOUT US</a></li>
+		<li><a href="X.html#OURPEOPLE" style="color:#888888;text-decoration: none;">OUR PEOPLE</li>
+		<li><a href="X.html#OURWORK" style="color:#888888;text-decoration: none;">OUR WORK</a></li>
+		<li><a href="X.html#OURPUBLICSERVICE" style="color:#888888;text-decoration: none;">OUR PUBLIC SERVICE</a></li>
+		<li><a href="X.html#JOINUS" style="color:#888888;text-decoration: none;">JOIN US</a></li>
+		<li><a href="X.html#LIBRARY" style="color:#888888;text-decoration: none;">LIBRARY</a></li>
+</ul>
+<ul class ="bottomlinks">
+		<li><a href="X.html#SOFTWARE" style="color:#888888">SOFTWARE</a></li>
+		<li><a href="X.html#HARDWARE" style="color:#888888">HARDWARE</li>
+		<li><a href="X.html#LANGUAGES" style="color:#888888">LANGUAGES</a></li>
+		<li><a href="X.html#DATABASES" style="color:#888888">DATABASES</a></li>
+</ul>
+<div align = "left">
+<p id ="content">
+<b id="title">OUR WORK</b><br>
+Perkins & Richards has earned its reputation as a powerhouse and transactional leader. Our<br>
+multidisciplinary staff are recognized around the world for their principled, zealous and effective work.<br>
+We count among our ranks 14 fellows, two former United States members, nine former assistant U.S.<br>
+members, and a former Supreme Court.<br>
+</p>
+<div id="line-et"><hr class="line" align="center"/></div>
+<NOSCRIPT>
+</body>
+</html>
+

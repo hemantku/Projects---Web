@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC “@-//W3C//DTD XHTML 1.0 Strict//EN”
+“http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict-dtd”>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+                <title>CSCI 571 - Homework #4</title>
+                <script type="text/javascript">
+			var xmlDoc;
+			function loadXML(url) 
+			{
+				if (window.XMLHttpRequest)
+				{
+					// code for IE7+, Firefox, Chrome, Opera, Safari
+					xmlhttp=new XMLHttpRequest();
+				}
+				else
+				{
+					// code for IE6, IE5
+					xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+				}
+				xmlhttp.open("GET",url,false); 
+				xmlhttp.onreadystatechange = function() 
+				{
+					
+					if (xmlhttp.readyState == 4)
+					{
+						if (xmlhttp.status == 404)
+						{
+							return false;
+						}
+					}
+				}
+				xmlhttp.send();  
+				xmlDoc=xmlhttp.responseXML;
+				return xmlDoc;
+			}
+			function parseXMLFile(url)
+			{
+				xmlresponse = loadXML(url);
+				//alert(xmlresponse);
+				//alert(url);
+				if(url == "")
+				{
+					alert("No URL in the textbox, please enter a URL!");
+					return false;
+				}
+			        if(!xmlresponse)
+				{
+					alert("Given URL does not exist!");
+					return false;
+				}
+				else if(window.ActiveXObject)
+				{
+
+					if (xmlDoc.parseError.errorCode != 0)
+					{
+						// error in XML file
+						alert("Error in XML File - Parsing failed!");
+						return false;
+					} 
+					else
+					{
+						alert("No Error in XML - Parsing succeded!");
+					}
+				}
+				else if (xmlresponse.getElementsByTagName("parsererror").length > 0)
+				{
+						alert("Error in XML File - Parsing failed");
+						return false;
+				}
+				//alert(url);
+				if (xmlresponse.getElementsByTagName("COMMON").length < 1)
+				{
+						alert("No Plants in the Catalog");
+				}
+				else
+				{
+						
+						html_text="<html><head><title>XML Plant Catalog</title></head><body>";
+        					html_text += "<table border='2'>";
+			html_text += "<tr><th>COMMON</th><th>BOTANICAL</th><th>ZONE</th><th>LIGHT</th><th>PRICE</th><th>IMAGE</th></tr>";
+
+				plant=xmlresponse.getElementsByTagName("PLANT");
+				//alert(common);
+				errorflag  = true;
+					for (i=0;i<plant.length;i++)
+					{
+						
+						html_text += "<tr>";
+if ((typeof (plant[i].getElementsByTagName("COMMON")[0]) == 'undefined') || (typeof (plant[i].getElementsByTagName("COMMON")[0].childNodes[0]) == 'undefined')) {botanical = "N/A";}
+else {common = plant[i].getElementsByTagName("COMMON")[0].childNodes[0].nodeValue; error = false; }
+					
+			if ((typeof (plant[i].getElementsByTagName("BOTANICAL")[0]) == 'undefined') || (typeof (plant[i].getElementsByTagName("BOTANICAL")[0].childNodes[0]) == 'undefined')) {botanical = "N/A";}
+else {botanical = plant[i].getElementsByTagName("BOTANICAL")[0].childNodes[0].nodeValue; error = false; }
+			
+			if ((typeof (plant[i].getElementsByTagName("ZONE")[0]) == 'undefined') || (typeof (plant[i].getElementsByTagName("ZONE")[0].childNodes[0]) == 'undefined')) {zone = "N/A";}
+else {zone = plant[i].getElementsByTagName("ZONE")[0].childNodes[0].nodeValue; error = false; }
+
+			if ((typeof (plant[i].getElementsByTagName("LIGHT")[0]) == 'undefined') || (typeof (plant[i].getElementsByTagName("LIGHT")[0].childNodes[0]) == 'undefined')) {light = "N/A";}
+else {light = plant[i].getElementsByTagName("LIGHT")[0].childNodes[0].nodeValue; error = false; }
+
+			if ((typeof (plant[i].getElementsByTagName("PRICE")[0]) == 'undefined') || (typeof (plant[i].getElementsByTagName("PRICE")[0].childNodes[0]) == 'undefined')) {price = "N/A";}
+else {price = plant[i].getElementsByTagName("PRICE")[0].childNodes[0].nodeValue; error = false; }
+
+			if ((typeof (plant[i].getElementsByTagName("IMAGE")[0]) == 'undefined') || (typeof (plant[i].getElementsByTagName("IMAGE")[0].childNodes[0]) == 'undefined')) {image = "N/A";}
+else {image = plant[i].getElementsByTagName("IMAGE")[0].childNodes[0].nodeValue; error = false; }
+
+					//alert("Plant")
+					html_text += "<td>"+common+"</td>";
+					html_text += "<td>"+botanical+"</td>";
+					html_text += "<td>"+zone+"</td>";
+					html_text += "<td>"+light+"</td>";
+					html_text += "<td>"+price+"</td>";
+					if (image == "N/A") 
+					{ 
+						html_text += "<td>No image</td>"; 
+					}
+					else 
+					{ 
+						html_text += "<td height=100 width=100><img  height=100 width=300 src=\""+image+"\"/></td>"; 
+					}
+					html_text += "</tr>";
+					
+				}
+					result_window = window.open();
+					result_window.document.open();
+					result_window.document.write(html_text);
+					result_window.document.close();
+				}
+				
+
+			}
+			                      
+	        </script>
+</head>
+<body>
+        <center>
+	<br><br><br><br><br><br><br><br>
+                <label for='xmlFile'>Enter URL for Plant Catalog XML File</label>
+                <br/>
+		<br/>
+                <input type='text' style='margin: 0px auto' size=25 id='xmlFile'/>
+                <br/>
+		<br/>
+                <input type='button'value='SubmitQuery' onClick='parseXMLFile(document.getElementById("xmlFile").value);' id='queryButton'/>
+
+        </center>
+        <NOSCRIPT>
+</body>
+</html>

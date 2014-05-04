@@ -1,0 +1,41 @@
+<html>
+<script src="http://yui.yahooapis.com/3.15.0/build/yui/yui-min.js"></script>
+<script type="text/javascript">
+YUI().use('tabview', function(Y) {
+    var tabview = new Y.TabView({srcNode:'#demo'});
+    tabview.render();
+});
+</script>
+<body class="yui3-skin-sam">
+<div id="demo">
+    <ul>
+        <li><a href="#foo">foo</a></li>
+        <li><a href="#bar">bar</a></li>
+        <li><a href="#baz">baz</a></li>
+    </ul>
+    <div>
+        <div id="foo">
+            <p>foo content</p>
+        </div>
+        <div id="bar">
+            <p>bar content</p>
+        </div>
+        <div id="baz">
+            <p>baz content</p>
+        </div>
+    </div>
+</div>
+<div id="queryForm" class="yui3-skin-sam">
+    <form>
+        <font color="#ffffff" size="4px">Company:</font> 
+        <input id="ac-input" type="text" size="80px" style="color:#cccccc;" value="Enter company symbol" 
+               onfocus="this.value=''; this.style='color:#000000';" 
+               onblur="if(this.value.length < 1) {this.value='Enter company symbol';style='color:#cccccc';}"/>
+        <input type="button" value="Search" onclick="">
+    </form>
+</div>
+
+</body>
+</html>
+
+

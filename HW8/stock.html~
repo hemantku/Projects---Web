@@ -1,0 +1,78 @@
+<html>
+<head>
+   <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+   <title>CSCI 571 Homework #8</title>
+   <link rel="stylesheet" href="customstock.css">
+  <script src="http://yui.yahooapis.com/3.13.0/build/yui/yui-min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+   
+   <script language="javascript">
+    var jsonObject;
+   $(document).ready(function() 
+   {
+	$('#stock-form').submit(function(event) 
+        { 
+		event.preventDefault(); // prevent page refresh
+        
+         // Check to make sure location was actually entered
+        if((document.forms["stock-form"]["symbol"].value=="") || (document.forms["stock-form"]["symbol"].value==null))
+	{ 									// check to make sure a company symbol was entered
+            window.alert("Please enter a symbol.");
+            return false;
+        } 
+	var symbol = document.forms["stock-form"]["symbol"].value;
+	var url= "http://cs-server.usc.edu:17001/examples/servlet/StockSearch?symbol=";
+        url = url + symbol;
+	alert(url);
+	var jsonStr;
+          $.ajax({
+	   type:'GET',
+	   url: url,
+	   success: function(response){
+		       	try{
+				    jsonObject = JSON.parse(response);
+				    alert(jsonObject.count);
+		   		}
+			catch(e)
+		   		{
+	       	 		   console.error("Parsing of JSON Failed! Error:", e);
+               		  	   alert("Invalid JSON string.");
+				}
+			}
+			if(jsonObject.result.Name)
+			{
+				 YUI().use('node', function(Y){
+                		if (jsonObject.weather.location.city) 
+				{
+                  			Y.one('#Name').set("innerHTML", "<h1>" + jsonObject.result.Name+ "</h1>");
+               			 }
+				 });
+
+			}
+			else 
+			{ // No results found
+              			YUI().use('node', function(Y){
+               			 Y.one('#results').set("innerHTML", "<h1>Weather information cannot be found!</h1>");
+             			 });
+           		}
+			
+		
+		});
+
+        });
+   });	
+   
+   </script>
+</head> 
+<body>
+  <div class="stock_searchForm">
+  <form class="stock-form" name="stock-form" id="stock-form">
+    <span class="label">Company:</span><input id="ac-input" class="input-large" type="text" name="symbol" placeholder="Enter Company symbol...">
+    <input class="input-rounded-button" style="height:35px;width:80px;" type="submit" name="submit" value="Search"><br>
+  </form><br><br><br>
+   </div>
+   <div id="results"></div>
+  <div id="Name"></div>
+ </body>
+</html>

@@ -1,0 +1,219 @@
+Y.one('#ac-input').plug(Y.Plugin.AutoComplete, {
+     resultHighlighter: 'phraseMatch',
+     resultListLocator: 'ResultSet.Result',
+     resultTextLocator: 'symbol',
+    source: 'http://yuilibrary.com/api/v1/search/suggest?q={query}&callback={callback}&count=50'
+    });
+
+
+var jsonObject;
+   $(document).ready(function() {
+	$('#stock-form').submit(function(event) { 
+		event.preventDefault(); // prevent page refresh
+        
+         // Check to make sure location was actually entered
+        if((document.forms["stock-form"]["symbol"].value=="") || (document.forms["stock-form"]["symbol"].value==null)){ // check to make sure a company symbol was entered
+            window.alert("Please enter a symbol.");
+            return false;
+        } 
+	var symbol = document.forms["stock-form"]["symbol"].value;
+	var url= "http://cs-server.usc.edu:17001/examples/servlet/StockSearch?symbol=";
+        url = url + symbol;
+	
+	var jsonStr;
+	
+	 $.ajax({
+	   type:'GET',
+	   url: url,
+	   success: function(response){
+			try{
+				    jsonObject = JSON.parse(response);
+				    alert(jsonObject.count);
+		   		}
+			catch(e)
+		   		{
+	       	 		   console.error("Parsing of JSON Failed! Error:", e);
+               		  alert("Invalid JSON string.");
+			}	
+			if(jsonObject.Name)
+			{
+
+			YUI().use('node',function(Y)
+			{
+
+				if (jsonObject.Name) {
+                  Y.one('#Name').set("innerHTML", "<h1>" + jsonObject.Name + "</h1>");
+                }
+
+
+				if (jsonObject.Symbol) {
+                  Y.one('#Symbol').set("innerHTML", "<h1>" + jsonObject.Symbol + "</h1>");
+				}
+
+
+	   			if (jsonObject.Quote.LastTradePriceOnly) {
+                  Y.one('#LastTradePriceOnly').set("innerHTML", "<h1>" + jsonObject.Quote.LastTradePriceOnly + "</h1>");
+              	}
+
+				if (jsonObject.Quote.Change) {
+                  Y.one('#Change').set("innerHTML", "<h1>" + jsonObject.Quote.Change + "</h1>");
+				}     
+			
+			 	if (jsonObject.Quote.ChangeinPercent) {
+                  Y.one('#ChangeinPercent').set("innerHTML", "<h1>" + jsonObject.Quote.ChangeinPercent + "</h1>");
+				}
+
+				if (jsonObject.StockChartImageURL) {
+                  Y.one('#StockChartImageURL').set("innerHTML", "<h1>" + jsonObject.StockChartImageURL + "</h1>");
+				}
+			});
+			
+
+		    YUI().use('tabview', function (Y) 
+		    {
+		    	if (jsonObject.Quote.PreviousClose) {
+                  Y.one('#PreviousClose').set("innerHTML", "<h1>" + jsonObject.Quote.PreviousClose + "</h1>");
+				}
+
+				if (jsonObject.Quote.DaysLow) {
+                  Y.one('#DaysLow').set("innerHTML", "<h1>" + jsonObject.Quote.DaysLow + "</h1>");
+				}
+
+				if (jsonObject.Quote.DaysHighs) {
+                  Y.one('#DaysHighs').set("innerHTML", "<h1>" + jsonObject.Quote.DaysHighs + "</h1>");
+				}
+
+				if (jsonObject.Quote.DaysHighs) {
+                  Y.one('#Open').set("innerHTML", "<h1>" + jsonObject.Quote.Open + "</h1>");
+				}
+
+				if (jsonObject.Quote.YearLow) {
+                  Y.one('#YearLow').set("innerHTML", "<h1>" + jsonObject.Quote.YearLow + "</h1>");
+				}
+
+				if (jsonObject.Quote.YearHigh) {
+                  Y.one('#YearHigh').set("innerHTML", "<h1>" + jsonObject.Quote.YearHigh + "</h1>");
+				}
+
+				if (jsonObject.Quote.Bid) {
+                  Y.one('#Bid').set("innerHTML", "<h1>" + jsonObject.Quote.Bid + "</h1>");
+				}
+
+				if (jsonObject.Quote.Ask) {
+                  Y.one('#Ask').set("innerHTML", "<h1>" + jsonObject.Quote.Ask + "</h1>");
+				}
+
+				if (jsonObject.Quote.AverageDailyVolume) {
+                  Y.one('#AverageDailyVolume').set("innerHTML", "<h1>" + jsonObject.Quote.AverageDailyVolume + "</h1>");
+				}
+
+				if (jsonObject.Quote.OneyrTargetPrice) {
+                  Y.one('#OneyrTargetPrice').set("innerHTML", "<h1>" + jsonObject.Quote.OneyrTargetPrice + "</h1>");
+				}
+
+				if (jsonObject.Quote.MarketCapitalization) {
+                  Y.one('#MarketCapitalization').set("innerHTML", "<h1>" + jsonObject.Quote.MarketCapitalization + "</h1>");
+				}
+			});
+			
+		}
+		else
+		{
+			//No results found
+			YUI().use('node', function(Y){
+                Y.one('#results').set("innerHTML", "<h1>Stock information cannot be found!</h1>");
+              });
+		}
+
+	 }
+  	 });
+    });
+   });
+
+
+
+Autocomplete code
+
+
+ $(document).ready(function(){
+  YUI().use('autocomplete', function (Y) {
+    function locateModules(response) {
+    var results = (response && response.ResultSet && response.ResultSet.Result) || [];
+    return results;
+    }
+
+    Y.one('#ac-input').plug(Y.Plugin.AutoComplete, {
+      activateFirstItem: true,
+      resultListLocator: locateModules,
+      resultTextLocator: 'name',
+      source: function (query, callback) {
+        // Use JQuery to call JSONP API
+        var url = 'http://autoc.finance.yahoo.com/autoc?query='+document.getElementById("ac-input").value+'&callback=YAHOO.Finance.SymbolSuggest.ssCallback';
+        $.get(url,function(data, status){
+          document.getElementById("topSec").innerHTML=url; // this is for test
+        });
+        // Implement call back function for Yahoo symbol JSONP API
+        YAHOO.Finance.SymbolSuggest.ssCallback = function (data) {
+            callback(data.ResultSet.Result);
+        }
+      }
+    });
+  });
+});
+   
+
+ <body class="yui3-skin-sam">
+   <div id="demo">
+    <ul>
+        <li><a href="#Quote Information"></a></li>
+        <li><a href="#News Headlines"></a></li>
+    </ul>
+    <div>
+        <div id="Quote Information">
+          <p><table style="width:1200px; height=20px;">
+            <tr><td>Prev. Close:</td><td align="right"><div id="PreviousClose"></div></td></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+            <tr></tr>
+          </table></p>
+        </div>
+        <div id="News Headlines">
+
+        </div>
+    </div>
+</div>
+ </body>
+
+
+ YUI().use('node', function(Y)
+         {
+             
+          Y.one('#PreviousClose').set("innerHTML",jsonObject.result.Quote.PreviousClose);
+          Y.one('#DaysRange').set("innerHTML",jsonObject.result.Quote.DaysLow + "-" + jsonObject.result.Quote.DaysHighs);
+          Y.one('#Open').set("innerHTML",jsonObject.result.Quote.Open);
+          Y.one('#52wkRange').set("innerHTML",jsonObject.result.Quote.YearLow + "-" + jsonObject.result.Quote.YearHigh);
+          Y.one('#Bid').set("innerHTML",jsonObject.result.Quote.Bid);
+          Y.one('#Volume').set("innerHTML",jsonObject.result.Quote.Volume);
+          Y.one('#Ask').set("innerHTML",jsonObject.result.Quote.Ask);
+          Y.one('#Avg.Vol(3m)').set("innerHTML",jsonObject.result.Quote.AverageDailyVolume);
+          Y.one('#1yTargetEst').set("innerHTML",jsonObject.result.Quote.OneyrTargetPrice);
+          Y.one('MarketCap').set("innerHTML",jsonObject.result.Quote.MarketCapitalization);
+                    
+         });
+          
+           YUI().use('tabview', function(Y) {
+            var tabview = new Y.TabView({srcNode:'#demo'});
+            tabview.render();
+      });
+'<ul><li><a href="' + jsonObject.result.News.Item[1].Link + '"</a>' + jsonObject.result.News.Item[1].Title + '</li></ul>'
+
+         alert(jsonObject.result.News.Item.length)
+         var output = "<ul>";
+         or (var i = 0; i < jsonObject.result.News.Item.length; i++)
+         {
+
+              output+='<li><a href="' + jsonObject.result.News.Item[i].Link + '"</a>' + jsonObject.result.News.Item[i].Title + '</li>';
+
+         }
+        output+="</ul>";

@@ -1,0 +1,43 @@
+<script type="text/javascript">
+$(document).ready(function(){
+  YUI().use('autocomplete', function (Y) {
+    function locateModules(response) {
+    var results = (response && response.ResultSet && response.ResultSet.Result) || [];
+    return results;
+    }
+
+    Y.one('#ac-input').plug(Y.Plugin.AutoComplete, {
+      activateFirstItem: true,
+      resultListLocator: locateModules,
+      resultTextLocator: 'name',
+      source: function (query, callback) {
+        // Use JQuery to call JSONP API
+        var url = 'http://autoc.finance.yahoo.com/autoc?query='+document.getElementById("ac-input").value+'&callback=YAHOO.Finance.SymbolSuggest.ssCallback';
+        $.get(url,function(data, status){
+          document.getElementById("topSec").innerHTML=url; // this is for test
+        });
+        // Implement call back function for Yahoo symbol JSONP API
+        YAHOO.Finance.SymbolSuggest.ssCallback = function (data) {
+            callback(data.ResultSet.Result);
+        }
+      }
+    });
+  });
+});
+</script>
+
+<body>
+
+
+<div id="queryForm" class="yui3-skin-sam">
+    <form>
+        <font color="#ffffff" size="4px">Company:</font> 
+        <input id="ac-input" type="text" size="80px" style="color:#cccccc;" value="Enter company symbol" 
+               onfocus="this.value=''; this.style='color:#000000';" 
+               onblur="if(this.value.length < 1) {this.value='Enter company symbol';style='color:#cccccc';}"/>
+        <input type="button" value="Search" onclick="">
+    </form>
+</div>
+
+</body>
+</html>

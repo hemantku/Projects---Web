@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<title>Homework #6</title>
+
+<script type="text/javascript">
+	function verifyInput()
+	{
+		var textbox_input = document.getElementById("location").value;
+		
+		// check to see if there was any input text in the location field
+		if (textbox_input == "")
+		{
+			alert("Please enter a location");
+			return false;
+		}
+		
+		// check to see if either the Fahrenheit or Celsius radio button were checked		
+		if (!(document.getElementById('radio1').checked || document.getElementById('radio2').checked))
+		{
+			alert("Please select either Fahrenheit or Celsius");
+			return false;
+		}
+
+		var e = document.getElementById("selector");
+		var usersChoice = e.options[e.selectedIndex].text;
+
+		// check if zipcode user entered is in correct format (5 numbers) if the user selected zipcode
+		if (usersChoice == "Zip Code")
+		{
+			var isValidZip = /(^\d{5}$)/.test(textbox_input);
+			
+			if (!isValidZip)
+			{
+				alert ("Zipcode entered not valid. Please enter 5 digits.");
+				return false;
+			}			
+		}
+		// check if the input is only alphabets if the user selected City since City do not have numbers in them
+		else if (usersChoice == "City")
+		{
+			var isNumbersOnly = /[0-9]/.test(textbox_input);
+			
+			if (isNumbersOnly)
+			{
+				alert ("City entered not valid. Please enter only alphabets.");
+				return false;
+			}
+		}
+
+		submitForm();
+	}
+	
+	function submitForm()
+	{
+		form = document.getElementById("form");
+		form.setAttribute("method", "GET");
+		form.setAttribute("action", "get_weather.php");
+		
+		form.submit();
+	}
+	
+</script>
+
+<style media="screen" type="text/css">
+
+tr#data,th#data {
+  text-align: center;
+}
+
+margin {0 250px 0;}
+
+</style>
+
+</head>
+
+http://cocoathings.com/
+<body>
+
+
+<div align="center">
+<form id="form">
+<table>
+<br /><br /><br /><br />
+<font size='6'><b>Weather Search</b></font>
+<tr>
+	<td>Location:</td>
+	<td><input name="location" id="location" type="text"  /></td>
+</tr>
+<br />
+<tr>
+	<td>Location Type:</td>
+	<td>
+		<select name="type" id="selector">
+			<option value="City" selected="selected">City</option>
+			<option value="Zipcode">Zip Code</option>
+		</select>
+	</td>
+</tr>
+<tr>
+	<td>Temperature Unit: </td>
+	<td><input type="radio" name="temperature" id="radio1" value="Fahrenheit" checked='checked'>Fahrenheit</input></td>
+	<td><input type="radio" name="temperature" id="radio2" value="Celsius">Celsius</input></td>
+</tr>
+
+<tr>
+<td><input type="submit" value="Submit" onclick="verifyInput(); return false" />
+</tr>
+</form>
+</div>
+</body>
+
+</html>

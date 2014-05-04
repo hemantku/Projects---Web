@@ -1,0 +1,213 @@
+
+<html>
+<head>
+
+<!-- code from the Professor's homework file provided to use -->
+<script type="text/javascript">
+	var xmlDoc;
+	function loadXML(url) 
+	{
+		if (window.XMLHttpRequest)
+		{
+			// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			// code for IE6, IE5
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		xmlhttp.open("GET",url,false); //open, send, responseXML are
+
+		xmlhttp.onreadystatechange = function() 
+		{
+			// Code found through a question that was posted on StackOverflow
+			if (xmlhttp.readyState == 4)
+			{
+				if (xmlhttp.status == 404)
+				{
+					return false;
+				}
+			}
+		}
+
+		xmlhttp.send(); //properties of XMLHTTPRequest 
+		xmlDoc=xmlhttp.responseXML;
+		//alert("ParseError Reports: " +xmlDoc.getElementsByTagName("parsererror").length);
+		
+		<!-- just some notes for future reference I found while doing this project -->
+		
+		// This returns 3 (TEXT_NODE) showing that all node text data is stored in a text node
+		// since each node has only 1 text attribute, we use childNodes[0]
+		//alert(txt=xmlDoc.getElementsByTagName("title")[1].childNodes[0].nodeType);
+
+		// This returns all the elements with the tag "title" in them
+		// We can use INDEX (for loop through length of xmlDoc) to get all titles in the XML file
+		//alert(txt=xmlDoc.getElementsByTagName("title")[INDEX].childNodes[0].nodeValue);
+		
+		return xmlDoc;
+	}
+	
+	function callProcessXMLFile(url)
+	{
+		// check if URL was empty (i.e. user did not submit a URL and just click ENTER)
+		
+		if (url == "")
+		{
+			alert("No URL entered in textbox");
+			return false;
+		}
+	
+		//xmlData contains xmlDoc
+		xmlData = loadXML(url);
+		
+		if (!xmlData)
+		{
+			alert("File Does Not Exist");
+			return false;
+		}
+		
+		// For Chrome check if xmlData is null
+		if (!xmlData)
+		{
+			alert("Error in XML File");
+			return false;
+		}
+		else if (window.ActiveXObject) // if IE, simply execute script (due to async prop).
+		{
+			if (xmlDoc.parseError.errorCode != 0)
+			{
+				// error in XML file
+				alert("Error in XML File");
+				return false;
+			} 
+			else
+			{
+				alert("No Error in XML");
+			}
+		}
+		// for Firefox check if there is a parseerror node. If there is then that means that XML is invalid
+		else if (xmlData.getElementsByTagName("parsererror").length > 0)
+		{
+			alert("Error in XML File");
+			return false;
+		}
+
+		// Another error condition that should be checked for is an XML file containing NO books. No other error conditions need be checked.
+		if (xmlData.getElementsByTagName("book").length < 1)
+		{
+			alert("No books in XML File");
+		}
+		else
+		{
+			generateHTML(xmlData);
+		}
+	}
+	
+	function generateHTML(xmlDoc)
+	{
+		// come to this function when XML is not invalid
+		// used to read the XML file and generate the HTML output to a new window
+
+		html_text="<html><head><title>XML Parse Result</title></head><body>";
+        html_text += "<table border='2'>";
+        
+		// Firefox detects both TEXT_NODE and ELEMENT_NODE. We need to differentiate between these two since we are interested in ELEMENT_NODE only
+	
+		html_text += "<tr><th>Author</th><th>Title</th><th>Genre</th><th>Price</th><th>Publish Date</th><th>Description</th><th>Image</th></tr>";
+
+		book=xmlDoc.getElementsByTagName("book");
+
+		/* This is used to take care of the case where there are <book></book> tags present in the XML file, but ALL the tags are empty
+		<catalog>
+			<book>
+			</book>
+			<book>
+			</book>
+		</catalog>
+
+		Per Piazza discussion, this is treated as a no-books case as well.
+		*/
+
+		// We assume that the book node have no tags in them. If we find a tag, we simply say error = false, meaning that there is a book node that has data attached to it (for example, a book node has author or title, etc attached to it) and show all stuff the XML file.
+		error = true;
+		
+		for (i=0;i<book.length;i++)
+		{
+			html_text += "<tr>";
+			
+			// ith Book (given as <book></book> in the XML file) is given by the variable book[i]
+			
+			if ((typeof (book[i].getElementsByTagName("author")[0]) == 'undefined') || (typeof (book[i].getElementsByTagName("author")[0].childNodes[0]) == 'undefined')) {	author = "N/A";	}
+			else { author = book[i].getElementsByTagName("author")[0].childNodes[0].nodeValue; error = false; }
+
+			if ((typeof (book[i].getElementsByTagName("title")[0]) == 'undefined') || (typeof (book[i].getElementsByTagName("title")[0].childNodes[0]) == 'undefined')) { title = "N/A"; }
+			else { title = book[i].getElementsByTagName("title")[0].childNodes[0].nodeValue; error = false; }
+
+			if ((typeof (book[i].getElementsByTagName("genre")[0]) == 'undefined') || (typeof (book[i].getElementsByTagName("genre")[0].childNodes[0]) == 'undefined')) { genre = "N/A"; }
+			else { genre = book[i].getElementsByTagName("genre")[0].childNodes[0].nodeValue; error = false; }
+
+			if ((typeof (book[i].getElementsByTagName("price")[0]) == 'undefined') || (typeof (book[i].getElementsByTagName("price")[0].childNodes[0]) == 'undefined')) { price = "N/A"; }
+			else { price = book[i].getElementsByTagName("price")[0].childNodes[0].nodeValue; error = false; }
+
+			if ((typeof (book[i].getElementsByTagName("publish_date")[0]) == 'undefined') || (typeof (book[i].getElementsByTagName("publish_date")[0].childNodes[0]) == 'undefined')) { publish_date = "N/A"; }
+			else { publish_date = book[i].getElementsByTagName("publish_date")[0].childNodes[0].nodeValue; error = false; }
+
+			if ((typeof (book[i].getElementsByTagName("description")[0]) == 'undefined') || (typeof (book[i].getElementsByTagName("description")[0].childNodes[0]) == 'undefined')) { description = "N/A"; }
+			else { description = book[i].getElementsByTagName("description")[0].childNodes[0].nodeValue; error = false; }
+
+			if ((typeof (book[i].getElementsByTagName("image")[0]) == 'undefined') || (typeof (book[i].getElementsByTagName("image")[0].childNodes[0]) == 'undefined')) { image = "N/A"; }
+			else { image = book[i].getElementsByTagName("image")[0].childNodes[0].nodeValue; error = false; }
+			
+			html_text += "<td>"+author+"</td>";
+			html_text += "<td>"+title+"</td>";
+			html_text += "<td>"+genre+"</td>";
+			html_text += "<td>"+price+"</td>";
+			html_text += "<td>"+publish_date+"</td>";
+			html_text += "<td>"+description+"</td>";
+			
+			if (image == "N/A") { html_text += "<td>No image URL given</td>"; }
+			else { html_text += "<td><img src=\""+image+"\" /></td>"; }
+			
+			html_text += "</tr>";
+		}
+		
+		if (error)
+		{
+			alert("<book></book> present but all of them contain no data. Treating this as no-books case (per Piazza discussion)");
+			return false;
+		}
+		
+		// Write results to a new window.
+		result_window = window.open();
+		result_window.document.open();
+		result_window.document.write(html_text);
+		result_window.document.close();
+		// close() used to tell browser no more data is coming, else it will keep waiting to receive data from server
+	}
+</script>
+
+</head>
+
+<body>
+
+<center>
+<br><br><br><br><br><br><br><br>
+Enter URL for Book XML File <br>
+<input id="xmlFile" type="text" size="75"></input><br>
+<button onclick=callProcessXMLFile(document.getElementById("xmlFile").value);>Submit Query</button>
+</center>
+<br />
+--
+5 possible entries in the above textbox:<br />
+books.xml<br />
+invalid.xml<br />
+nobooks.xml<br />
+nobookstag.xml<br />
+nonewbooks.xml<br />
+--
+<br />
+<NOSCRIPT>
+</body>
+</html>

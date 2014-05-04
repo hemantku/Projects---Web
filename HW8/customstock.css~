@@ -1,0 +1,32 @@
+.label {
+  font-size: 1.5em;
+  font-family: FreeSans, Arimo, "Droid Sans", Helvetica, Arial, sans-serif;
+  color: white;
+  padding-right: 15px;
+}
+
+.input-large {
+  width: 400px;
+  height: 35px;
+}
+body {
+  background-color:#cccccc;
+  background-image:url('stockimage.jpg');
+  width: 960px;
+  margin: 30px auto;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+h1 {
+  font-family: FreeSans, Arimo, "Droid Sans", Helvetica, Arial, sans-serif;
+  color: white; 
+}
+
+.stock_searchForm {
+   margin: 0 auto;
+   padding-top: 20px;
+   padding-left: 200px;
+}
